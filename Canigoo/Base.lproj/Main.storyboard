@@ -228,7 +228,7 @@
                                     </mask>
                                 </variation>
                                 <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="16" y="201" width="368" height="190"/>
+                                    <rect key="frame" x="16" y="200" width="368" height="190"/>
                                     <mask key="subviews">
                                         <include reference="0Kr-gh-A6l"/>
                                         <include reference="KwR-Ot-Bes"/>
@@ -288,7 +288,7 @@
                                 <animations/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="391" width="400" height="54"/>
+                                    <rect key="frame" x="0.0" y="390" width="400" height="55"/>
                                 </variation>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Adu-Xc-ano">
@@ -296,7 +296,7 @@
                                 <animations/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="0.0" y="164" width="400" height="37"/>
+                                    <rect key="frame" x="0.0" y="164" width="400" height="36"/>
                                 </variation>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="chh-4h-d1X">
@@ -419,8 +419,7 @@
                                         <exclude reference="vQX-9e-3Pa"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="169" y="445" width="64" height="64"/>
+                                <variation key="widthClass=compact">
                                     <mask key="subviews">
                                         <include reference="mg0-26-Ddc"/>
                                     </mask>

@@ -32,8 +32,8 @@ class RadioViewController: UIViewController {
     @IBOutlet weak var currentTrackLabel: UILabel!
     
     //private var player = AVPlayer(URL: NSURL(string: "http://canigoo.com:8000/canigoo_002_128")!)
-    private var player:AVPlayer!
-    private var currentlyPlaying = false
+    fileprivate var player:AVPlayer!
+    fileprivate var currentlyPlaying = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +41,7 @@ class RadioViewController: UIViewController {
         self.showView.layer.cornerRadius = 5
         self.showView.alpha = 0
         self.onAirView.layer.cornerRadius = 5
-        self.onAirView.layer.borderColor = UIColor(red: 214.0/255, green: 186.0/255, blue: 37.0/255, alpha: 1).CGColor
+        self.onAirView.layer.borderColor = UIColor(red: 214.0/255, green: 186.0/255, blue: 37.0/255, alpha: 1).cgColor
         self.onAirView.layer.borderWidth = 1
         self.toggleButtonView.layer.cornerRadius = 32
         
@@ -53,12 +53,12 @@ class RadioViewController: UIViewController {
                 MPMediaItemPropertyTitle: "Canigoo Radio",
                 MPMediaItemPropertyArtist: "www.canigoo.com",
                 MPMediaItemPropertyArtwork: albumArt
-            ]
-            MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = songInfo
+            ] as [String : Any]
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = songInfo
         }
         
-        try! AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, withOptions: [])
-        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        try! AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: [])
+        UIApplication.shared.beginReceivingRemoteControlEvents()
         
         volumeView.tintColor = UIColor(red: 214.0/255, green: 186.0/255, blue: 37.0/255, alpha: 1)
         
@@ -66,8 +66,8 @@ class RadioViewController: UIViewController {
         
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
 
     override func didReceiveMemoryWarning() {
@@ -75,7 +75,7 @@ class RadioViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func toggleButtonAction(sender: AnyObject) {
+    @IBAction func toggleButtonAction(_ sender: AnyObject) {
         if self.currentlyPlaying {
             pauseRadio()
         } else {
@@ -86,11 +86,11 @@ class RadioViewController: UIViewController {
     func playRadio() {
         let url = "http://canigoo.com:8000/canigoo_002_128"
         
-        let playerItem = AVPlayerItem(URL:NSURL(string:url)!)
+        let playerItem = AVPlayerItem(url:URL(string:url)!)
         player = AVPlayer(playerItem:playerItem)
-        player.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.New, context:nil)
+        player.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context:nil)
         
-        toggleButton.setImage(UIImage(named: "pauseBtn")!, forState: UIControlState.Normal)
+        toggleButton.setImage(UIImage(named: "pauseBtn")!, for: UIControlState())
         player.play()
         self.currentlyPlaying = true
         
@@ -101,7 +101,7 @@ class RadioViewController: UIViewController {
         player.pause()
         player.removeObserver(self, forKeyPath: "status")
         self.currentlyPlaying = false
-        toggleButton.setImage(UIImage(named: "playBtn")!, forState: UIControlState.Normal)
+        toggleButton.setImage(UIImage(named: "playBtn")!, for: UIControlState())
         player = nil
     }
     
@@ -109,10 +109,10 @@ class RadioViewController: UIViewController {
         
         let jsonUrl = "http://radio.canigoo.com/api/live-info-v2"
         
-        let session = NSURLSession.sharedSession()
-        let shotsUrl = NSURL(string: jsonUrl)
+        let session = URLSession.shared
+        let shotsUrl = URL(string: jsonUrl)
         
-        let task = session.dataTaskWithURL(shotsUrl!) {
+        let task = session.dataTask(with: shotsUrl!, completionHandler: {
             (data, response, error) -> Void in
             
             if !(error != nil) {
@@ -120,7 +120,7 @@ class RadioViewController: UIViewController {
                 
                 print(json)
                 
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     
                     if let currentShow = json["shows"]["current"].dictionary {
                         self.showNameLabel.text = currentShow["name"]!.string
@@ -129,14 +129,14 @@ class RadioViewController: UIViewController {
                         if let starts = currentShow["starts"]!.string {
                             if let ends = currentShow["ends"]!.string {
                                 
-                                let dateFormatter = NSDateFormatter()
+                                let dateFormatter = DateFormatter()
                                 dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:SS"
-                                let startDate = dateFormatter.dateFromString(starts)
-                                let endDate = dateFormatter.dateFromString(ends)
+                                let startDate = dateFormatter.date(from: starts)
+                                let endDate = dateFormatter.date(from: ends)
                                 
                                 dateFormatter.dateFormat = "h:mm a"
-                                let startTime = dateFormatter.stringFromDate(startDate!)
-                                let endTime = dateFormatter.stringFromDate(endDate!)
+                                let startTime = dateFormatter.string(from: startDate!)
+                                let endTime = dateFormatter.string(from: endDate!)
                                 
                                 self.showScheduleLabel.text = "from " + startTime + " to " + endTime
                             }
@@ -144,12 +144,12 @@ class RadioViewController: UIViewController {
                     }
                     
                     if let currentTrackEnds = json["tracks"]["current"]["ends"].string {
-                        let dateFormatter = NSDateFormatter()
+                        let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:SS"
-                        let endDate = dateFormatter.dateFromString(currentTrackEnds)
-                        let elapsedTime = endDate!.timeIntervalSinceDate(NSDate())
+                        let endDate = dateFormatter.date(from: currentTrackEnds)
+                        let elapsedTime = endDate!.timeIntervalSince(Date())
                         print(elapsedTime)
-                        NSTimer.scheduledTimerWithTimeInterval(elapsedTime + 3, target: self, selector: "refreshInfo", userInfo: nil, repeats: false)
+                        Timer.scheduledTimer(timeInterval: elapsedTime + 3, target: self, selector: #selector(RadioViewController.refreshInfo), userInfo: nil, repeats: false)
                     }
                     
                     
@@ -164,45 +164,47 @@ class RadioViewController: UIViewController {
                                 MPMediaItemPropertyTitle: currentTrackName,
                                 MPMediaItemPropertyArtist: "www.canigoo.com",
                                 MPMediaItemPropertyArtwork: albumArt
-                            ]
-                            MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = songInfo
+                            ] as [String : Any]
+                            MPNowPlayingInfoCenter.default().nowPlayingInfo = songInfo
                         }
                     }
                     
-                    UIView.animateWithDuration(0.5, animations: { () -> Void in
+                    UIView.animate(withDuration: 0.5, animations: { () -> Void in
                         self.showView.alpha = 1
                     })
                     
                 }
             }
             
-        }
+        }) 
         
         task.resume()
     }
     
     // MARK: KVO
     
-    override internal func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override internal func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
-        if let change = change as? [String: Int]
-        {
-            let status = change[NSKeyValueChangeNewKey]!
+        //if let change = change as [NSKeyValueChangeKey :Any]
+        //{
+            //let status = change?[NSKeyValueChangeKey.newKey]!
+        
+        let status = (change?[NSKeyValueChangeKey.newKey] as! NSNumber).intValue as AVPlayerStatus.RawValue
+        
             switch (status) {
-            case AVPlayerStatus.ReadyToPlay.rawValue:
+            case AVPlayerStatus.readyToPlay.rawValue:
                 
                 //toggleButton.setImage(UIImage(named: "pauseBtn")!, forState: UIControlState.Normal)
                 //player.play()
                 self.currentlyPlaying = true
                 
-            case AVPlayerStatus.Failed.rawValue:
+            case AVPlayerStatus.failed.rawValue:
                 print("Failed to stream audio")
                 
-            default:
-                true
+            default: break
             }
             
-        }
+        //}
         
     }
 
